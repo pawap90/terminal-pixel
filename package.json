@@ -1,21 +1,29 @@
 {
-    "name": "terminal-pixel-canvas",
-    "version": "1.0.0",
-    "description": "A pixel-art tool for the terminal",
-    "scripts": {
-        "dev": "ts-node-dev --respawn src/index.ts",
-        "build": "tsc",
-        "start": "node dist/index.js"
-    },
-    "keywords": [],
-    "author": "Paula Santamaría",
-    "license": "ISC",
-    "devDependencies": {
-        "@types/node": "^20.1.7",
-        "ts-node-dev": "^2.0.0",
-        "typescript": "^5.0.4"
-    },
-    "dependencies": {
-        "chalk": "^4.1.2"
-    }
+  "name": "terminal-pixel-canvas",
+  "version": "1.0.0",
+  "description": "A pixel-art tool for the terminal",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "Paula Santamaría",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.1.7",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pawap90/terminal-pixel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pawap90/terminal-pixel/issues"
+  },
+  "homepage": "https://github.com/pawap90/terminal-pixel#readme"
 }
