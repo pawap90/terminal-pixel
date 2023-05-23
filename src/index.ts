@@ -14,7 +14,7 @@ const palette: Palette = {
 };
 
 // Draw menu.
-let menu = 'Move: ↑ ↓ ← → | Clear color: del | Exit: esc\nPalette: ';
+let menu = 'Move: ↑ ↓ ← → | Clear color: del | Exit: q\nPalette: ';
 for (const colorKey in palette) {
     menu += chalk.hex('#212121').bgHex(palette[colorKey])(` ${colorKey} `);
 }
@@ -28,10 +28,11 @@ const controller = new Controller()
     .on('left', () => canvas.move('left'))
     .on('right', () => canvas.move('right'))
     .on('delete', () => canvas.clear())
-    .on('escape', () => process.exit(0));
+    .on('q', () => process.exit(0));
 
+// Paint the current pixel using numbers.
 for (const colorKey in palette) {
-    controller.on(colorKey, () => canvas.paint(colorKey));
+    controller.on(colorKey,  () => canvas.paint(colorKey));
 }
 
 controller.build();
