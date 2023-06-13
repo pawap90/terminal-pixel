@@ -1,6 +1,8 @@
 import chalk from 'chalk';
+import { PaintArea, PaintSinglePixel } from './paint-strategies';
 
-type HexColor = `#${string}`;
+
+export type HexColor = `#${string}`;
 
 export type Pixel = {
     x: number;
@@ -10,11 +12,25 @@ export type Pixel = {
 
 export type Palette = Record<string, HexColor>;
 
+export interface IPaintStrategy {
+    paint(canvas: Canvas, pixel: Pixel, color?: HexColor): void;
+}
+
+export const tools = ['pencil', 'bucket'];
+export type Tool = (typeof tools)[number];
+
+export const toolStrategies: Record<Tool, IPaintStrategy> = {
+    pencil: new PaintSinglePixel(),
+    bucket: new PaintArea()
+};
+
 export class Canvas {
-    private width: number;
-    private height: number;
+    width: number;
+    height: number;
+    pixels: Pixel[][] = [];
+    tool: Tool;
+    
     private palette: Palette;
-    private pixels: Pixel[][] = [];
     private cursor: Omit<Pixel, 'value'> = { x: 0, y: 0 };
     private borders: { top: string; side: string; bottom: string };
     private footer: string;
@@ -36,6 +52,7 @@ export class Canvas {
         this.palette = palette;
         this.footer = footer;
         this.borders = this.generateBoundaries();
+        this.tool = 'pencil';
     }
 
     /**
@@ -72,7 +89,7 @@ export class Canvas {
         console.clear();
         console.log(output);
 
-        console.log(`Cursor: X: ${this.cursor.x} Y: ${this.cursor.y}`);
+        console.log(`Cursor: X: ${this.cursor.x} Y: ${this.cursor.y} | Tool: ${this.tool}`);
         console.log(this.footer);
     }
 
@@ -94,18 +111,28 @@ export class Canvas {
     }
 
     /**
-     * Paint the selected pixel and re-render the canvas.
+     * Switch to the next tool and re-render the canvas.
      */
-    paint(colorKey: string): void {
-        this.selectedPixel.value = this.palette[colorKey];
+    switchTool(): void {
+        const currentToolIndex = tools.indexOf(this.tool);
+        const nextToolIndex = (currentToolIndex + 1) % tools.length;
+        this.tool = tools[nextToolIndex];
         this.render();
     }
 
     /**
-     * Clear the selected pixel removing its value and re-render the canvas.
+     * Paint the selected pixel and re-render the canvas.
+     */
+    paint(colorKey: string): void {
+        toolStrategies[this.tool].paint(this, this.selectedPixel, this.palette[colorKey]);
+        this.render();
+    }
+
+    /**
+     * Clear the selected pixel or area removing its value and re-render the canvas.
      */
     clear(): void {
-        this.selectedPixel.value = undefined;
+        toolStrategies[this.tool].paint(this, this.selectedPixel);
         this.render();
     }
 
@@ -115,9 +142,7 @@ export class Canvas {
     private drawPixel(pixel: Pixel): string {
         const isSelected = pixel.x == this.cursor.x && pixel.y == this.cursor.y;
         if (isSelected && pixel.value)
-            return chalk.hex(this.selectedColor).bgHex(pixel.value)(
-                this.selectedChar
-            );
+            return chalk.hex(this.selectedColor).bgHex(pixel.value)(this.selectedChar);
         if (pixel.value) return chalk.bgHex(pixel.value)(this.pixelChar);
         if (isSelected) return chalk.hex(this.selectedColor)(this.selectedChar);
 
